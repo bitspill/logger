@@ -3,10 +3,13 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
-	// "github.com/azer/is-terminal"
 	"os"
 	"strings"
+	"syscall"
 	"time"
+
+	// "github.com/azer/is-terminal"
+	sequences "github.com/konsorten/go-windows-terminal-sequences"
 )
 
 func NewStandardOutput(file *os.File) OutputWriter {
@@ -17,6 +20,8 @@ func NewStandardOutput(file *os.File) OutputWriter {
 
 	defaultOutputSettings := parseVerbosityLevel(os.Getenv("LOG_LEVEL"))
 	writer.Settings = parsePackageSettings(os.Getenv("LOG"), defaultOutputSettings)
+
+	sequences.EnableVirtualTerminalProcessing(syscall.Handle(writer.Target.Fd()), true)
 
 	return writer
 }
